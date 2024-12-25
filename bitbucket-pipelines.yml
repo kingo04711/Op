@@ -1,0 +1,23 @@
+pipelines:
+  default:
+    - step:
+        name: Run Python Script (24 Hours)
+        image: python:3.10  # Or your preferred Python version
+        size: 2x # Use a larger runner size if needed
+        script:
+          - echo "Starting pipeline..."
+          # Install required dependencies
+          - pip install telebot flask pytz psutil aiogram pymongo aiohttp python-telegram-bot
+          # Make the script executable
+          - chmod +x Kala
+          # Run the script in the background using nohup and redirect output
+          - nohup python3 Kala.py > output.log 2>&1 &
+          - echo "Background script started. Logs in output.log"
+
+          # Keep pipeline running for (almost) 24 hours
+          # Adjust sleep time as needed, less than 24 hours if needed
+          - sleep 86399 
+        timeout: 24 hours # Sets the maximum time before the step is cancelled
+        # Allow the step to fail after 24 hours
+        # Prevent the pipeline to enter failed state when the 24 hour timeout happens
+        allow_failure: true
